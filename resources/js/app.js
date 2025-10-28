@@ -15,9 +15,9 @@ import { createApp } from 'vue';
 
 const app = createApp({});
 
-// import ExampleComponent from './components/ExampleComponent.vue';
+import ProjectBrowser from './components/ProjectBrowser.vue';
 import CampaignPage from './components/CampaignPage.vue';
-// app.component('example-component', ExampleComponent);
+app.component('project-browser', ProjectBrowser);
 app.component('campaign-page', CampaignPage);
 
 /**

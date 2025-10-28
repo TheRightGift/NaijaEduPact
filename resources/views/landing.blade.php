@@ -61,9 +61,15 @@
                                     <br>
                                     <div class="progress">
                                         @php
-                                            $progress = ($project->current_amount / $project->goal_amount) * 100;
+                                            if ($project->goal_amount > 0) {
+                                                // Calculate progress and cap it at 100%
+                                                $progress = min(($project->current_amount / $project->goal_amount) * 100, 100);
+                                            } else {
+                                                // If goal is 0, progress is 0
+                                                $progress = 0;
+                                            }
                                         @endphp
-                                        <div class="determinate" style=`"width: {{ $progress }}%"`></div>
+                                        <div class="determinate" style="width: {{ $progress }}%"></div>
                                     </div>
                                     <p>₦{{ number_format($project->current_amount) }} raised of ₦{{ number_format($project->goal_amount) }}</p>
                                 </div>

@@ -5,10 +5,14 @@
     <h3>Donor Intelligence</h3>
     <p>Focus your personal outreach on the highest-potential donors.</p>
 
-    <a href="{{ route('uadmin.analytics.index') }}" class="btn-flat">All</a>
-    <a href="{{ route('uadmin.analytics.index', ['segment' => 'Potential Major Donor']) }}" class="btn-flat">Potential Major Donors</a>
-    <a href="{{ route('uadmin.analytics.index', ['segment' => 'Likely to Upgrade']) }}" class="btn-flat">Likely to Upgrade</a>
-    <a href="{{ route('uadmin.analytics.index', ['segment' => 'At Risk of Lapsing']) }}" class="btn-flat">At Risk of Lapsing</a>
+    <div class="section">
+        <a href="{{ route('uadmin.analytics.index') }}" class="btn-flat waves-effect">All</a>
+        <a href="{{ route('uadmin.analytics.index', ['segment' => 'Potential Major Donor']) }}" class="btn-flat waves-effect">Potential Major Donors</a>
+        <a href="{{ route('uadmin.analytics.index', ['segment' => 'Likely to Upgrade']) }}" class="btn-flat waves-effect">Likely to Upgrade</a>
+        <a href="{{ route('uadmin.analytics.index', ['segment' => 'At Risk of Lapsing']) }}" class="btn-flat waves-effect">At Risk of Lapsing</a>
+        <a href="{{ route('uadmin.analytics.index', ['segment' => 'Engaged Non-Donor']) }}" class="btn-flat waves-effect">Engaged Non-Donors</a>
+        <a href="{{ route('uadmin.analytics.index', ['segment' => 'General Donor']) }}" class="btn-flat waves-effect">General Donors</a>
+    </div>
 
     <table class="striped">
         <thead>
@@ -31,12 +35,13 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">No donors found.</td>
+                    <td colspan="5" class="center-align">No donors found in this segment.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
     
-    {{ $donors->links('pagination::materialize-css') }}
+    {{-- This ensures the pagination links keep the segment filter --}}
+    {{ $donors->appends(request()->except('page'))->links('pagination::materialize-css') }}
 </div>
 @endsection

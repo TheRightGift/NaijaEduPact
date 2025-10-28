@@ -32,6 +32,9 @@
     </div>
 </div>
 
+@endsection {{-- This closes the main @section('content') --}}
+
+@push('scripts') {{-- This pushes the script to the layout file --}}
 <script>
     // Initialize Materialize select
     document.addEventListener('DOMContentLoaded', function() {

@@ -2,16 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Public\LandingPageController;
+use App\Http\Controllers\Public\ProjectController;
+use App\Http\Controllers\Public\CampaignController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UniversityAdminController;
-use App\Http\Controllers\UniversityAdmin\CampaignController;
+use App\Http\Controllers\UniversityAdmin\CampaignController as AdminCampaignController;;
 use App\Http\Controllers\MentorshipController;
 use App\Http\Controllers\JobController;
 
 Auth::routes();
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/campaigns/{campaign:slug}', [\App\Http\Controllers\Public\CampaignController::class, 'show'])->name('campaigns.show');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     
@@ -42,16 +46,23 @@ Route::middleware(['auth'])->group(function () {
     // University Admin Routes
     Route::middleware(['role:universityadmin'])->prefix('uadmin')->name('uadmin.')->group(function () {
         Route::get('/dashboard', [UniversityAdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/projects/create', [UniversityAdminController::class, 'createProject'])->name('projects.create');
-        Route::post('/projects', [UniversityAdminController::class, 'storeProject'])->name('projects.store');
-        Route::resource('campaigns', \App\Http\Controllers\UniversityAdmin\CampaignController::class);
+        // This will manage all project routes: index, create, store, edit, update, destroy
+        Route::resource('projects', UniversityAdminController::class)->except(['index', 'show']);
+        
+        Route::resource('campaigns', AdminCampaignController::class);
+        Route::post('/campaigns/{campaign}/add-project', [AdminCampaignController::class, 'addProject'])->name('campaigns.addProject');
+        Route::post('/campaigns/{campaign}/add-challenge', [AdminCampaignController::class, 'addChallenge'])->name('campaigns.addChallenge');
+
         Route::get('/analytics', [\App\Http\Controllers\UniversityAdmin\AnalyticsController::class, 'index'])->name('analytics.index');
     });
 });
 
 
-Route::get('/projects', function () {
-    return view('projects.index');
-})->name('projects.index');
+// Route::get('/projects', function () {
+//     return view('projects.index');
+// })->name('projects.index');
 
-Route::get('/campaigns/{campaign:slug}', [CampaignController::class, 'show'])->name('campaigns.show');
+Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show'); // <-- ADD THIS
+
+

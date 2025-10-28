@@ -5,6 +5,8 @@ namespace App\Http\Controllers\UniversityAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\University;
+use App\Models\Project;
+use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -65,19 +67,78 @@ class CampaignController extends Controller
     }
 
     /**
-     * Display the specified campaign.
+     * Display the specified campaign management hub.
      */
     public function show(Campaign $campaign)
     {
-        // Authorization check: Ensure the admin can only view their own university's campaigns.
         if ($campaign->university_id !== Auth::user()->university_id) {
             abort(403);
         }
 
-        // Eager load related projects and challenges for efficiency
+        // Eager load related projects and challenges
         $campaign->load('projects', 'challenges');
 
-        return view('admin.university.campaigns.show', compact('campaign'));
+        // Fetch projects from this university that are NOT already in a campaign
+        $unassignedProjects = Project::where('university_id', Auth::user()->university_id)
+                                     ->whereNull('campaign_id')
+                                     ->where('status', 'active') // Only add active projects
+                                     ->get();
+
+        return view('admin.university.campaigns.show', compact('campaign', 'unassignedProjects'));
+    }
+
+    /**
+     * Add an existing project to the specified campaign.
+     */
+    public function addProject(Request $request, Campaign $campaign)
+    {
+        if ($campaign->university_id !== Auth::user()->university_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'project_id' => 'required|exists:projects,id',
+        ]);
+
+        $project = Project::find($request->project_id);
+
+        // Final check to ensure project belongs to the same university
+        if ($project->university_id !== Auth::user()->university_id) {
+            abort(403);
+        }
+
+        $project->campaign_id = $campaign->id;
+        $project->save();
+
+        return back()->with('success', 'Project added to campaign.');
+    }
+
+    /**
+     * Add a new challenge to the specified campaign.
+     */
+    public function addChallenge(Request $request, Campaign $campaign)
+    {
+        if ($campaign->university_id !== Auth::user()->university_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'donor_name' => 'required|string|max:255',
+            'match_amount' => 'required|numeric|min:1',
+            'challenge_type' => 'required|string|in:donor_count,total_amount',
+            'challenge_threshold' => 'required|integer|min:1',
+        ]);
+
+        Challenge::create([
+            'campaign_id' => $campaign->id,
+            'donor_name' => $request->donor_name,
+            'match_amount' => $request->match_amount,
+            'challenge_type' => $request->challenge_type,
+            'challenge_threshold' => $request->challenge_threshold,
+            'status' => 'active',
+        ]);
+
+        return back()->with('success', 'Challenge added successfully.');
     }
 
     /**

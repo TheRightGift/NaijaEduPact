@@ -14,6 +14,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    
     <style>
         /* Custom Styles */
         body { display: flex; min-height: 100vh; flex-direction: column; }
