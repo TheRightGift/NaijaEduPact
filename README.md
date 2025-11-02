@@ -1,4 +1,6 @@
-Here is the complete `README.md` file content for your NaijaEdu-Pact project, including all Markdown formatting.
+Here is the updated `README.md` content.
+
+The setup instructions and AWS deployment guide have been updated to reflect the new payment gateway variables and server requirements.
 
 -----
 
@@ -22,6 +24,7 @@ The platform is built on three pillars: **Transparency** (donors see exactly wha
       * **Job Board:** Alumni can post job opportunities for students from their alma mater.
       * **E-Mentoring:** Students can request mentorship from available alumni.
       * **Auto-Transition:** Students are automatically converted to alumni accounts upon their graduation year.
+  * **Secure Payment Flow:** Integrated with Stripe Checkout to handle secure, real-time donations.
 
 ## 💻 Tech Stack
 
@@ -30,7 +33,7 @@ The platform is built on three pillars: **Transparency** (donors see exactly wha
   * **Styling:** Materialize CSS
   * **API & Auth:** Laravel Passport
   * **Database:** MySQL
-  * **Payments:** Paystack & Stripe
+  * **Payments:** Stripe (primary), Paystack (planned)
   * **File Storage:** Local / Amazon S3
   * **Background Jobs:** Laravel Queues (Database Driver)
   * **Scheduled Tasks:** Laravel Scheduler
@@ -85,6 +88,7 @@ Open `.env` and set up your database, mail, and queue settings.
 # --- App ---
 APP_NAME="NaijaEdu-Pact"
 APP_URL=http://naija-edu-pact.test
+APP_DEBUG=true
 
 # --- Database ---
 DB_CONNECTION=mysql
@@ -103,18 +107,20 @@ MAIL_MAILER=log
 # --- Storage ---
 FILESYSTEM_DISK=public
 
-# --- Payment Gateways ---
-PAYSTACK_PUBLIC_KEY=...
-PAYSTACK_SECRET_KEY=...
-STRIPE_KEY=...
-STRIPE_SECRET=...
+# --- Payment Gateways (Stripe) ---
+STRIPE_KEY=pk_test_...
+STRIPE_SECRET=sk_test_...
+
+# --- Currency Rates ---
+# Set the NGN equivalent of 1 USD for payment validation
+USD_TO_NGN_RATE=1450
 ```
 
 ### 6\. Run Migrations & Database Setup
 
 ```bash
-# Run all database migrations
-php artisan migrate
+# Run all database migrations and create tables
+php artisan migrate:fresh
 
 # (Optional) If you have seeders, run them
 php artisan db:seed
@@ -277,6 +283,7 @@ Here is a guide for deploying your application to a scalable AWS infrastructure.
           * `AWS_SECRET_ACCESS_KEY=` (Your IAM Secret)
           * `AWS_DEFAULT_REGION=` (e.g., `us-east-1`)
           * `AWS_BUCKET=` (Your S3 bucket name)
+          * `USD_TO_NGN_RATE=1450` (or your current rate)
 4.  **Install & Build:**
     ```bash
     composer install --no-dev --optimize-autoloader
