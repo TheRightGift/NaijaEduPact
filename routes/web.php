@@ -5,7 +5,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Public\LandingPageController;
 use App\Http\Controllers\Public\ProjectController;
 use App\Http\Controllers\Public\CampaignController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DonationController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\SuperAdmin\UniversityController;
+use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\UniversityAdminController;
 use App\Http\Controllers\UniversityAdmin\CampaignController as AdminCampaignController;;
 use App\Http\Controllers\MentorshipController;
@@ -17,7 +21,10 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 Route::get('/campaigns/{campaign:slug}', [\App\Http\Controllers\Public\CampaignController::class, 'show'])->name('campaigns.show');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    
+    // Add this new route for donation history
+    Route::get('/my-donations', [HomeController::class, 'donationHistory'])->name('donations.history');
     
     // Add the resource route for jobs
     Route::resource('jobs', JobController::class);
@@ -34,20 +41,35 @@ Route::middleware(['auth'])->group(function () {
     // Add this line for students to send requests
     Route::post('/mentorship/request', [MentorshipController::class, 'store'])->name('mentorship.request.store');
 
+    // This route starts the payment session
+    Route::post('/donate/start', [DonationController::class, 'startPayment'])
+         ->name('donate.start');
+         
+    // Stripe redirects here on success
+    Route::get('/donate/success', [DonationController::class, 'paymentSuccess'])
+         ->name('donate.success');
+         
+    // Stripe redirects here on cancellation
+    Route::get('/donate/cancel', [DonationController::class, 'paymentCancel'])
+         ->name('donate.cancel');
+    
     // Super Admin Routes
     Route::middleware(['role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/projects/pending', [SuperAdminController::class, 'pendingProjects'])->name('projects.pending');
         Route::post('/projects/{project}/approve', [SuperAdminController::class, 'approveProject'])->name('projects.approve');
         Route::post('/projects/{project}/reject', [SuperAdminController::class, 'rejectProject'])->name('projects.reject');
-        // Add routes for University CRUD here
+        // Resource route for managing universities
+        Route::resource('universities', UniversityController::class);
+        
+        Route::resource('users', UserController::class)->only(['index', 'edit', 'update']);
     });
 
     // University Admin Routes
     Route::middleware(['role:universityadmin'])->prefix('uadmin')->name('uadmin.')->group(function () {
         Route::get('/dashboard', [UniversityAdminController::class, 'dashboard'])->name('dashboard');
-        // This will manage all project routes: index, create, store, edit, update, destroy
-        Route::resource('projects', UniversityAdminController::class)->except(['index', 'show']);
+        
+        Route::resource('projects', UniversityAdminController::class)->except(['show']);
         
         Route::resource('campaigns', AdminCampaignController::class);
         Route::post('/campaigns/{campaign}/add-project', [AdminCampaignController::class, 'addProject'])->name('campaigns.addProject');

@@ -30,7 +30,7 @@
                             <p>{{ Str::limit($job->description, 150) }}</p>
                         </div>
                         <div class="card-action">
-                            <a href="#" class="indigo-text">View Details & Apply</a>
+                            <a href="{{ route('jobs.show', $job) }}" class="indigo-text">View Details & Apply</a>
                         </div>
                     </div>
                 </div>

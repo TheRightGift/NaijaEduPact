@@ -36,6 +36,20 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title"><i class="material-icons left">assignment</i> Manage Projects</span>
+                        <p>Create new projects, post updates, and manage existing fundraising goals.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="{{ route('uadmin.projects.create') }}" class="indigo-text">Create New Project</a>
+                        
+                        <a href="{{ route('uadmin.projects.index') }}" class="indigo-text">View All Projects</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

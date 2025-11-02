@@ -34,5 +34,14 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'stripe' => [
+        'model' => App\Models\User::class,
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+    'rates' => [
+        'usd_to_ngn' => env('USD_TO_NGN_RATE'), 
+        'min_usd' => env('MIN_USD', 1.00),
+    ],
 
 ];

@@ -6,22 +6,20 @@
                 <input type="text" id="search" v-model="searchTerm" @input="updateFilters">
                 <label for="search">Search by project title...</label>
             </div>
-            </div>
+        </div>
 
-        <div v-if="loading" class="row center-align" style="padding-top: 50px;">
-            <div class="col s12">
-                <div class="preloader-wrapper big active">
-                    <div class="spinner-layer spinner-blue-only">
-                        <div class="circle-clipper left"><div class="circle"></div></div>
-                        <div class="gap-patch"><div class="circle"></div></div>
-                        <div class="circle-clipper right"><div class="circle"></div></div>
-                    </div>
+        <div v-if="loading" class="center-align" style="padding-top: 50px;">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left"><div class="circle"></div></div>
+                    <div class="gap-patch"><div class="circle"></div></div>
+                    <div class="circle-clipper right"><div class="circle"></div></div>
                 </div>
-            </div>            
+            </div>
         </div>
 
         <div v-else class="row">
-            <div class="col s12 m6 l4" v-for="project in filteredProjects" :key="project.id">
+            <div v-for="project in filteredProjects" :key="project.id" class="col s12 m6 l4">
                 <div class="card">
                     <div class="card-image">
                         <img :src="getImageUrl(project.cover_image_path)" @error="setDefaultImage">
@@ -36,13 +34,38 @@
                         <p>₦{{ formatCurrency(project.current_amount) }} raised of ₦{{ formatCurrency(project.goal_amount) }}</p>
                     </div>
                     <div class="card-action">
-                        <a :href="`/projects/${project.slug}`" class="indigo-text">View Project Details</a>
+                         <a v-if="!isLoggedIn" :href="`/projects/${project.slug}`" class="indigo-text">View Project Details</a>
+                        <a v-else :href="`#donateModal-${project.id}`" class="btn-flat indigo-text modal-trigger">
+                            Donate Now
+                        </a>
                     </div>
                     <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">{{ project.title }}<i class="material-icons right">close</i></span>
                         <p>{{ project.description }}</p>
                     </div>
                 </div>
+
+                <div :id="`donateModal-${project.id}`" class="modal">
+                    <form :action="donateUrl" method="POST">
+                        <input type="hidden" name="_token" :value="csrfToken">
+                        <input type="hidden" name="project_id" :value="project.id">
+
+                        <div class="modal-content">
+                            <h4>Donate to {{ project.title }}</h4>
+                            <div class="input-field">
+                                <input type="number" name="amount" :id="`amount-${project.id}`" min="100" required>
+                                <label :for="`amount-${project.id}`">Amount (NGN)</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#!" class="modal-close waves-effect waves-grey btn-flat">Cancel</a>
+                            <button type="submit" class="btn waves-effect waves-light indigo">
+                                Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
             
             <div v-if="!loading && filteredProjects.length === 0" class="col s12">
@@ -58,13 +81,24 @@
 import axios from 'axios';
 
 export default {
+    props: {
+        // We check if the user is logged in by seeing if the 'user' prop is passed
+        // This should be passed from the Blade file as:
+        // <project-browser :is-logged-in="{{ auth()->check() ? 'true' : 'false' }}"></project-browser>
+        isLoggedIn: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
             projects: [],
             filteredProjects: [],
             searchTerm: '',
             loading: true,
-            defaultImageUrl: 'https://via.placeholder.com/400x300.png?text=Project+Image'
+            defaultImageUrl: 'https://via.placeholder.com/400x300.png?text=Project+Image',
+            csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            donateUrl: '/donate/start' // The route we created
         };
     },
     methods: {
@@ -100,24 +134,31 @@ export default {
         },
         getImageUrl(path) {
             // If path exists, return the full storage path, otherwise return default
-            return path ? `${path}` : this.defaultImageUrl;
+            return path ? `/storage/${path}` : this.defaultImageUrl;
         },
         setDefaultImage(event) {
             // Fired if the project image fails to load (e.g., 404)
             event.target.src = this.defaultImageUrl;
+        },
+        initializeModals() {
+            // This function initializes all modals on the page.
+            this.$nextTick(() => {
+                setTimeout(() => { // Give Vue time to render
+                    var elems = document.querySelectorAll('.modal');
+                    M.Modal.init(elems);
+                }, 500); // 0.5 second delay
+            });
+        }
+    },
+    watch: {
+        // We watch the filteredProjects array. If it changes,
+        // it means new modals might be on the page, so we re-initialize.
+        filteredProjects() {
+            this.initializeModals();
         }
     },
     mounted() {
-        console.log('here');
-        
         this.fetchProjects();
-
-        // Initialize Materialize card reveal (if not already done globally)
-        document.addEventListener('DOMContentLoaded', function() {
-            var elems = document.querySelectorAll('.card');
-            // This is a basic way; a more robust app would init this *after*
-            // the component mounts and renders.
-        });
     }
 }
 </script>

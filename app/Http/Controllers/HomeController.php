@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
 use App\Models\Job; 
 use App\Models\User;
+use App\Models\Donation;
 
 class HomeController extends Controller
 {
@@ -61,5 +62,27 @@ class HomeController extends Controller
         // 3. Fallback for 'donor' (Alumni)
         // This view will contain their dashboard, including the "Manage My Job Postings" button.
         return view('home');
+    }
+
+    /**
+     * Show the user's personal donation history.
+     */
+    public function donationHistory()
+    {
+        $user = Auth::user();
+
+        // Ensure only donors can see this page
+        if ($user->role !== 'donor') {
+            abort(403);
+        }
+
+        // Fetch all successful donations, eager-load the project info
+        $donations = Donation::where('user_id', $user->id)
+                             ->where('status', 'successful')
+                             ->with('project')
+                             ->latest()
+                             ->paginate(20);
+
+        return view('donations.history', compact('donations'));
     }
 }

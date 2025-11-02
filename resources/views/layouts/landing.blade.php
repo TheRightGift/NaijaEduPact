@@ -61,6 +61,23 @@
         </nav>
 
         <main>
+            <div class="container">
+                @if (session('success'))
+                    <div class="card-panel green lighten-4 green-text text-darken-4">{{ session('success') }}</div>
+                @endif
+                @if (session('error'))
+                    <div class="card-panel red lighten-4 red-text text-darken-4">{{ session('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="card-panel red lighten-4 red-text text-darken-4">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
             @yield('content')
         </main>
 

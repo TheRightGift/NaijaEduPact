@@ -49,7 +49,10 @@
                         <td>{{ $campaign->end_time->format('M d, Y') }}</td>
                         <td>
                             <a href="{{ route('uadmin.campaigns.show', $campaign) }}" class="btn-small waves-effect waves-light">
-                                View/Manage
+                                View
+                            </a>
+                            <a href="{{ route('uadmin.campaigns.edit', $campaign) }}" class="btn-small waves-effect waves-light orange">
+                                Edit
                             </a>
                         </td>
                     </tr>

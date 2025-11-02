@@ -18,6 +18,24 @@ class JobController extends Controller
     }
 
     /**
+     * Display the specified job.
+     */
+    public function show(Job $job)
+    {
+        // Security: Ensure a student can only see jobs from their own university
+        if (Auth::user()->role == 'student') {
+            if ($job->university_id !== Auth::user()->university_id) {
+                abort(403);
+            }
+        }
+
+        // Eager load the alumnus who posted it
+        $job->load('user');
+
+        return view('jobs.show', compact('job'));
+    }
+
+    /**
      * Show the form for creating a new job.
      */
     public function create()

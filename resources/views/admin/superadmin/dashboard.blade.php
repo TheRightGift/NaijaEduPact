@@ -30,8 +30,19 @@
                         <p>Onboard new partner universities, edit profiles, and manage university admins.</p>
                     </div>
                     <div class="card-action">
-                        {{-- Add this route when you build university CRUD --}}
-                        <a href="#" class="indigo-text">View All Universities</a>
+                        <a href="{{ route('superadmin.universities.index') }}" class="indigo-text">View All Universities</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title"><i class="material-icons left">people</i> Manage Users</span>
+                        <p>Assign roles and manage user accounts.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="{{ route('superadmin.users.index') }}" class="indigo-text">View All Users</a>
                     </div>
                 </div>
             </div>

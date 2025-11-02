@@ -67,6 +67,18 @@ class UniversityAdminController extends Controller
     }
 
     /**
+     * Display a listing of all projects for the admin's university.
+     */
+    public function index()
+    {
+        $projects = Project::where('university_id', Auth::user()->university_id)
+                           ->orderBy('created_at', 'desc')
+                           ->paginate(15);
+                           
+        return view('admin.university.projects.index', compact('projects'));
+    }
+
+    /**
      * Show the form for editing the specified project.
      */
     public function edit(Project $project)
