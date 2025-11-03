@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/naijaedupact
+file_exists_behavior: OVERWRITE
+hooks:
+  ApplicationStop:
+    - location: CICDScripts/application_stop.sh
+      timeout: 300
+      runas: ubuntu
+  BeforeInstall:
+    - location: CICDScripts/before_install.sh
+      timeout: 300
+      runas: ubuntu
+  # Install:
+    - location: CICDScripts/install.sh
+      timeout: 500
+      runas: ubuntu
+  AfterInstall:
+    - location: CICDScripts/after_install.sh
+      timeout: 500
+      runas: ubuntu
+  ApplicationStart:
+    - location: CICDScripts/application_start.sh
+      timeout: 300
+      runas: ubuntu
