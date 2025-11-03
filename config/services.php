@@ -43,5 +43,7 @@ return [
         'usd_to_ngn' => env('USD_TO_NGN_RATE'), 
         'min_usd' => env('MIN_USD', 1.00),
     ],
-
+    'tinymce' => [
+        'api_key' => env('TINYMCE_API_KEY'),
+    ],
 ];

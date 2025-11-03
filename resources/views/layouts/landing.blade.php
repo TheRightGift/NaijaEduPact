@@ -104,5 +104,6 @@
             M.Sidenav.init(elems);
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

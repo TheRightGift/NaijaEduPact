@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <script src="https://cdn.tiny.cloud/1/{{ config('services.tinymce.api_key') }}/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -82,6 +84,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.sidenav');
             M.Sidenav.init(elems);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.sidenav');
+            M.Sidenav.init(elems);
+            
+            // Initialize TinyMCE
+            tinymce.init({
+                selector: 'textarea.rich-editor',
+                plugins: 'lists link image media table code help wordcount',
+                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code help',
+                height: 400,
+                media_dimensions: false,
+                media_live_embeds: true,
+            });
         });
     </script>
     @stack('scripts')

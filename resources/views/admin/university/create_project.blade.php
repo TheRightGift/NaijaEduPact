@@ -16,8 +16,7 @@
                 @enderror
             </div>
             <div class="input-field">
-                <textarea id="description" name="description" class="materialize-textarea" required>{{ old('description') }}</textarea>
-                <label for="description">Project Description</label>
+                <textarea id="description" name="description" class="rich-editor">{{ old('description') }}</textarea>
                 @error('description')
                     <span class="helper-text red-text">{{ $message }}</span>
                 @enderror

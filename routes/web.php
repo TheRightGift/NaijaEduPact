@@ -10,6 +10,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\UniversityController;
 use App\Http\Controllers\SuperAdmin\UserController;
+use App\Http\Controllers\UniversityAdmin\ProjectTimelineUpdateController;
 use App\Http\Controllers\UniversityAdminController;
 use App\Http\Controllers\UniversityAdmin\CampaignController as AdminCampaignController;;
 use App\Http\Controllers\MentorshipController;
@@ -76,6 +77,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/campaigns/{campaign}/add-challenge', [AdminCampaignController::class, 'addChallenge'])->name('campaigns.addChallenge');
 
         Route::get('/analytics', [\App\Http\Controllers\UniversityAdmin\AnalyticsController::class, 'index'])->name('analytics.index');
+
+        Route::post('projects/{project}/updates', [ProjectTimelineUpdateController::class, 'store'])->name('projects.updates.store');
     });
 });
 

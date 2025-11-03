@@ -41,7 +41,7 @@
                     </div>
                     <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">{{ project.title }}<i class="material-icons right">close</i></span>
-                        <p>{{ project.description }}</p>
+                        <div v-html="project.description"></div>
                     </div>
                 </div>
 
@@ -162,3 +162,8 @@ export default {
     }
 }
 </script>
+<style scoped>
+    .project-content .video-container iframe {
+        width: 100% !important;
+    }
+</style>

@@ -54,9 +54,17 @@ class Project extends Model
     /**
      * Get the updates for the project.
      */
-    public function updates()
+    // public function updates()
+    // {
+    //     return $this->hasMany(ProjectUpdate::class);
+    // }
+
+    /**
+     * Get all of the timeline updates for the project.
+     */
+    public function timelineUpdates()
     {
-        return $this->hasMany(ProjectUpdate::class);
+        return $this->hasMany(ProjectTimelineUpdate::class)->orderBy('created_at', 'desc');
     }
 
     /**
