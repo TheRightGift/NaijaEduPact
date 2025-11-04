@@ -15,4 +15,4 @@ echo 'App starting...'
 # Building frontend
 sudo npm run build
 
-echo '✅ Application started successfully!'
+echo 'Application started successfully!'
