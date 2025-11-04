@@ -13,6 +13,6 @@ echo 'App starting...'
 # fi
 
 # Building frontend
-npm run build
+sudo npm run build
 
 echo '✅ Application started successfully!'
