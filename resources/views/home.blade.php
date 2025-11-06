@@ -92,7 +92,7 @@
         if (!$path) {
             return 'https://via.placeholder.com/400x300.png?text=Project+Image';
         }
-        if (Str::startsWith($path, 'storage/')) {
+        if (Str::startsWith($path, '/storage/')) {
             return asset($path);
         }
         return Storage::url($path);
