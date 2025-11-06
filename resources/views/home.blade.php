@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col s12 l8">
+        <div class="col s12 l9">
 
             @if(session('success'))
                 <div class="card-panel green lighten-4 green-text text-darken-4">{{ session('success') }}</div>
@@ -55,7 +55,7 @@
 
         </div>
 
-        <div class="col s12 l4">
+        <div class="col s12 l3">
             
             <div class="card-panel center-align">
                 <h5 class="grey-text text-darken-2">My Impact</h5>
