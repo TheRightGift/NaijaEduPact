@@ -17,7 +17,7 @@
             
             <div class="row">
                 @forelse($universityProjects as $project)
-                    <div class="col s12 m6">
+                    <div class="col s12 m6 l4">
                         <div class="card sticky-action">
                             <div class="card-image">
                                 @if(in_array($project->id, $donatedProjectIds))
