@@ -4,7 +4,7 @@
             <div class="input-field col s12 m6">
                 <i class="material-icons prefix">search</i>
                 <input type="text" id="search" v-model="searchTerm" @input="updateFilters">
-                <label for="search">Search by project title...</label>
+                <label for="search">Search by project title or university...</label>
             </div>
         </div>
 
@@ -53,8 +53,9 @@
                         <div class="modal-content">
                             <h4>Donate to {{ project.title }}</h4>
                             <div class="input-field">
-                                <input type="number" name="amount" :id="`amount-${project.id}`" min="100" required>
+                                <input type="number" name="amount" :id="`amount-${project.id}`" :min="minDonation" required>
                                 <label :for="`amount-${project.id}`">Amount (NGN)</label>
+                                <span class="helper-text">Minimum donation is ₦{{ minDonation }} (approx. $1 USD)</span>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -82,9 +83,6 @@ import axios from 'axios';
 
 export default {
     props: {
-        // We check if the user is logged in by seeing if the 'user' prop is passed
-        // This should be passed from the Blade file as:
-        // <project-browser :is-logged-in="{{ auth()->check() ? 'true' : 'false' }}"></project-browser>
         isLoggedIn: {
             type: Boolean,
             default: false
@@ -98,7 +96,8 @@ export default {
             loading: true,
             defaultImageUrl: 'https://via.placeholder.com/400x300.png?text=Project+Image',
             csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            donateUrl: '/donate/start' // The route we created
+            donateUrl: '/donate/start', // The route we created
+            minDonation: 1450 // This should ideally be passed as a prop or from a global config
         };
     },
     methods: {
@@ -134,7 +133,14 @@ export default {
         },
         getImageUrl(path) {
             // If path exists, return the full storage path, otherwise return default
-            return path ? `/storage/${path}` : this.defaultImageUrl;
+            if (!path) {
+                return this.defaultImageUrl;
+            }
+            // Handle incorrect paths that already contain 'storage/'
+            if (path.startsWith('storage/')) {
+                return `/${path}`;
+            }
+            return `/storage/${path}`;
         },
         setDefaultImage(event) {
             // Fired if the project image fails to load (e.g., 404)
@@ -162,8 +168,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-    .project-content .video-container iframe {
-        width: 100% !important;
-    }
-</style>
