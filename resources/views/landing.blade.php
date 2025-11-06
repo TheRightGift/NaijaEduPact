@@ -160,7 +160,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070');
+        background-image: url('/storage/guest/NaijaUndergradsInLibrary.png');
         background-size: cover;
         background-position: center;
         color: white;
