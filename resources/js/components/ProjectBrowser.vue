@@ -143,7 +143,7 @@ export default {
             
             let imagePath = '';
             // Handle incorrect paths that already contain 'storage/'
-            if (path.startsWith('storage/')) {
+            if (path.startsWith('/storage/')) {
                 imagePath = path;
             } else {
                 imagePath = `storage/${path}`;
