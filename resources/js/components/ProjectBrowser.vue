@@ -139,7 +139,7 @@ export default {
                 return this.defaultImageUrl;
             }
             // Handle incorrect paths that already contain 'storage/'
-            if (path.startsWith('storage/')) {
+            if (path.startsWith('/storage/')) {
                 return `/${path}`;
             }
             return `/storage/${path}`;
