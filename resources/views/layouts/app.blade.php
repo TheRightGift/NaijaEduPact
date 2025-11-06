@@ -84,6 +84,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.sidenav');
             M.Sidenav.init(elems);
+
+            var modalElems = document.querySelectorAll('.modal');
+            M.Modal.init(modalElems);
         });
 
         document.addEventListener('DOMContentLoaded', function() {

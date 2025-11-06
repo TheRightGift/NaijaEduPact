@@ -35,11 +35,7 @@ class HomeController extends Controller
 
         // --- Role-based Redirects ---
         if ($user->role == 'student') {
-            $jobs = Job::where('university_id', $user->university_id)
-                       ->where('status', 'active')->latest()->get();
-            $mentors = User::where('university_id', $user->university_id)
-                           ->where('role', 'donor')
-                           ->where('is_available_for_mentoring', true)->get();
+            // ... (student logic)
             return view('dashboards.student', compact('jobs', 'mentors'));
         }
         if ($user->role == 'superadmin') {
@@ -49,8 +45,7 @@ class HomeController extends Controller
             return redirect()->route('uadmin.dashboard');
         }
 
-        // --- 3. New Donor Dashboard Logic ---
-        // This logic now runs only for the 'donor' role
+        // --- New Donor Dashboard Logic ---
 
         // A. Get all active projects from the user's university
         $universityProjects = Project::where('university_id', $user->university_id)
@@ -58,24 +53,24 @@ class HomeController extends Controller
                                      ->latest()
                                      ->get();
 
-        // B. Get a list of project IDs this user has successfully donated to
-        $donatedProjectIds = Donation::where('user_id', $user->id)
+        // B. Get a list of project IDs and the total amount this user has donated to each
+        $userDonationsPerProject = Donation::where('user_id', $user->id)
                                      ->where('status', 'successful')
-                                     ->pluck('project_id')
-                                     ->unique()
-                                     ->toArray();
+                                     ->groupBy('project_id')
+                                     // Create a sum of all donations for each project
+                                     ->selectRaw('project_id, SUM(amount) as total_amount')
+                                     // Create an associative array: [project_id => total_amount]
+                                     ->pluck('total_amount', 'project_id')
+                                     ->all();
 
         // C. Get "at-a-glance" impact stats
-        $totalDonations = Donation::where('user_id', $user->id)
-                                  ->where('status', 'successful')
-                                  ->sum('amount');
-        
-        $projectsSupported = count($donatedProjectIds);
+        $totalDonations = array_sum($userDonationsPerProject); // Sum of the new array
+        $projectsSupported = count($userDonationsPerProject); // Count of the new array
 
         // D. Pass all data to the 'home' view
         return view('home', compact(
             'universityProjects', 
-            'donatedProjectIds', 
+            'userDonationsPerProject', // <-- Pass the new array
             'totalDonations', 
             'projectsSupported'
         ));
