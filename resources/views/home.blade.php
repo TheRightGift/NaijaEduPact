@@ -23,7 +23,7 @@
                                 @if(in_array($project->id, $donatedProjectIds))
                                     <span class="donated-badge">Donated</span>
                                 @endif
-                                <img src="{{ getImageUrl($project->cover_image_path) }}" @error="setDefaultImage">
+                                <img src="{{ getImageUrl($project->cover_image_path) }}" onerror="this.src='https://via.placeholder.com/400x300.png?text=Project+Image'">
                             </div>
                             <div class="card-content">
                                 <span class="card-title activator grey-text text-darken-4" style="font-size: 1.2rem; line-height: 1.4;">
@@ -87,20 +87,18 @@
 </div>
 @endsection
 
-{{-- Helper function to get image URL --}}
 @php
     function getImageUrl($path) {
         if (!$path) {
             return 'https://via.placeholder.com/400x300.png?text=Project+Image';
         }
-        if (Str::startsWith($path, '/storage/')) {
+        if (Str::startsWith($path, 'storage/')) {
             return asset($path);
         }
         return Storage::url($path);
     }
 @endphp
 
-{{-- Custom CSS for the "Donated" badge --}}
 @push('styles')
 <style>
     .card-image {
