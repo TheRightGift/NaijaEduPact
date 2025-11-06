@@ -34,7 +34,7 @@
                         <p>₦{{ formatCurrency(project.current_amount) }} raised of ₦{{ formatCurrency(project.goal_amount) }}</p>
                     </div>
                     <div class="card-action">
-                         <a v-if="!isLoggedIn" :href="`/projects/${project.slug}`" class="indigo-text">View Project Details</a>
+                         <a v-if="!isLoggedIn" :href="`${appUrl}/projects/${project.slug}`" class="indigo-text">View Project Details</a>
                         <a v-else :href="`#donateModal-${project.id}`" class="btn-flat indigo-text modal-trigger">
                             Donate Now
                         </a>
@@ -86,6 +86,10 @@ export default {
         isLoggedIn: {
             type: Boolean,
             default: false
+        },
+        appUrl: { // <-- App URL prop
+            type: String,
+            required: true
         }
     },
     data() {
@@ -96,17 +100,18 @@ export default {
             loading: true,
             defaultImageUrl: 'https://via.placeholder.com/400x300.png?text=Project+Image',
             csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            donateUrl: '/donate/start', // The route we created
-            minDonation: 1450 // This should ideally be passed as a prop or from a global config
+            donateUrl: '/donate/start', // This is relative to the appUrl
+            minDonation: 1450
         };
     },
     methods: {
         async fetchProjects() {
             this.loading = true;
             try {
-                const response = await axios.get('/api/projects');
+                // Use the appUrl to make the API call
+                const response = await axios.get(`${this.appUrl}/api/projects`);
                 this.projects = response.data;
-                this.filteredProjects = this.projects; // Initially show all
+                this.filteredProjects = this.projects;
             } catch (error) {
                 console.error("There was an error fetching the projects:", error);
             } finally {
@@ -123,7 +128,7 @@ export default {
         getProgress(project) {
             if (project.goal_amount > 0) {
                 let progress = (project.current_amount / project.goal_amount) * 100;
-                return Math.min(progress, 100); // Cap at 100%
+                return Math.min(progress, 100);
             }
             return 0;
         },
@@ -132,35 +137,33 @@ export default {
             return Number(amount).toLocaleString('en-NG', { minimumFractionDigits: 2 });
         },
         getImageUrl(path) {
-            console.log(path);
-        
-            // If path exists, return the full storage path, otherwise return default
             if (!path) {
                 return this.defaultImageUrl;
             }
+            
+            let imagePath = '';
             // Handle incorrect paths that already contain 'storage/'
-            if (path.startsWith('/storage/')) {
-                return `/${path}`;
+            if (path.startsWith('storage/')) {
+                imagePath = path;
+            } else {
+                imagePath = `storage/${path}`;
             }
-            return `/storage/${path}`;
+            // Prepend the appUrl prop to create the full, absolute URL
+            return `${this.appUrl}/${imagePath}`;
         },
         setDefaultImage(event) {
-            // Fired if the project image fails to load (e.g., 404)
             event.target.src = this.defaultImageUrl;
         },
         initializeModals() {
-            // This function initializes all modals on the page.
             this.$nextTick(() => {
-                setTimeout(() => { // Give Vue time to render
+                setTimeout(() => {
                     var elems = document.querySelectorAll('.modal');
                     M.Modal.init(elems);
-                }, 500); // 0.5 second delay
+                }, 500);
             });
         }
     },
     watch: {
-        // We watch the filteredProjects array. If it changes,
-        // it means new modals might be on the page, so we re-initialize.
         filteredProjects() {
             this.initializeModals();
         }
