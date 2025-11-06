@@ -3,57 +3,90 @@
 @section('content')
 <div class="container">
     <div class="row">
-
-        <div class="col s12 l8">
-
-            @if(session('success'))
-                @endif
-
-            <h4>Projects from {{ Auth::user()->university->name ?? 'your Alma Mater' }}</h4>
+        <div class="col s12">
             
-            <div class="row">
-                @forelse($universityProjects as $project)
-                    <div class="col s12 m6">
-                        <div class="card sticky-action">
-                            <div class="card-image">
-                                <img src="{{ getImageUrl($project->cover_image_path) }}" onerror="this.src='https://via.placeholder.com/400x300.png?text=Project+Image'">
-                            </div>
-                            <div class="card-content">
+            @if(session('success'))
+                <div class="card-panel green lighten-4 green-text text-darken-4">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="card-panel red lighten-4 red-text text-darken-4">{{ session('error') }}</div>
+            @endif
+
+            <div class="card-panel">
+                <h5>Alumni Dashboard</h5>
+                <p>Welcome, {{ Auth::user()->name }}.</p>
+                
+                <a href="{{ route('jobs.index') }}" class="btn-large indigo waves-effect waves-light" style="margin: 5px;">
+                    Manage My Job Postings
+                </a>
+                <a href="{{ route('mentorship.index') }}" class="btn-large indigo waves-effect waves-light" style="margin: 5px;">
+                    Mentorship Dashboard
+                </a>
+                <a href="{{ route('donations.history') }}" class="btn-large indigo waves-effect waves-light" style="margin: 5px;">
+                    My Donation History
+                </a>
+            </div>
+
+            <div class="section">
+                <h4>Projects from {{ Auth::user()->university->name ?? 'your Alma Mater' }}</h4>
+                
+                <div class="row">
+                    @forelse($universityProjects as $project)
+                        <div class="col s12 m6 l4"> <div class="card sticky-action">
+                                <div class="card-image">
+                                    <img src="{{ getImageUrl($project->cover_image_path) }}" onerror="this.src='https://via.placeholder.com/400x300.png?text=Project+Image'">
                                 </div>
-                            <div class="card-action">
-                                <a href="{{ route('projects.show', $project) }}" class="indigo-text">View Project</a>
-                                
-                                @if (isset($userDonationsPerProject[$project->id]))
-                                    <a href="#donation-details-{{ $project->id }}" class="modal-trigger indigo-text" style="float: right;">
-                                        My Donation
-                                    </a>
-                                @endif
+                                <div class="card-content">
+                                    <span class="card-title activator grey-text text-darken-4" style="font-size: 1.2rem; line-height: 1.4;">
+                                        {{ $project->title }}
+                                    </span>
+                                    <div class="progress" style="margin-top: 15px;">
+                                        @php
+                                            $progress = $project->goal_amount > 0 ? min(($project->current_amount / $project->goal_amount) * 100, 100) : 0;
+                                        @endphp
+                                        <div class="determinate" style="width: {{ $progress }}%"></div>
+                                    </div>
+                                    <p class="grey-text">
+                                        ₦{{ number_format($project->current_amount) }} raised of ₦{{ number_format($project->goal_amount) }}
+                                    </p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="{{ route('projects.show', $project) }}" class="indigo-text">View Project</a>
+                                    
+                                    @if (isset($userDonationsPerProject[$project->id]))
+                                        <a href="#donation-details-{{ $project->id }}" class="modal-trigger indigo-text" style="float: right;">
+                                            My Donation
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            @if (isset($userDonationsPerProject[$project->id]))
+                                <div id="donation-details-{{ $project->id }}" class="modal" style="max-width: 400px; border-radius: 8px;">
+                                    <div class="modal-content center-align">
+                                        <h5 class="grey-text">Your Impact on</h5>
+                                        <h6>{{ $project->title }}</h6>
+                                        <h3 class="indigo-text" style="margin: 10px 0;">₦{{ number_format($userDonationsPerProject[$project->id]) }}</h3>
+                                        <p class="grey-text" style="margin-top: -10px;">Total Donated</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+                                    </div>
+                                </div>
+                            @endif
+
+                        </div>
+                    @empty
+                        <div class="col s12">
+                            <div class="card-panel">
+                                <p class="center-align">Your university has no active projects right now. Check back soon!</p>
                             </div>
                         </div>
-                        
-                        @if (isset($userDonationsPerProject[$project->id]))
-                            <div id="donation-details-{{ $project->id }}" class="modal" style="max-width: 400px; border-radius: 8px;">
-                                <div class="modal-content center-align">
-                                    <h5 class="grey-text">Your Impact on</h5>
-                                    <h6>{{ $project->title }}</h6>
-                                    <h3 class="indigo-text" style="margin: 10px 0;">₦{{ number_format($userDonationsPerProject[$project->id]) }}</h3>
-                                    <p class="grey-text" style="margin-top: -10px;">Total Donated</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
-                                </div>
-                            </div>
-                        @endif
-
-                    </div>
-                @empty
                     @endforelse
+                </div>
             </div>
 
         </div>
-
-        <div class="col s12 l4">
-            </div>
     </div>
 </div>
 @endsection
