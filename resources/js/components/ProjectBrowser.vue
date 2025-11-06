@@ -132,6 +132,8 @@ export default {
             return Number(amount).toLocaleString('en-NG', { minimumFractionDigits: 2 });
         },
         getImageUrl(path) {
+            console.log(path);
+        
             // If path exists, return the full storage path, otherwise return default
             if (!path) {
                 return this.defaultImageUrl;
