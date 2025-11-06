@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
 use App\Models\Job; 
 use App\Models\User;
+use App\Models\Project; 
 use App\Models\Donation;
 
 class HomeController extends Controller
@@ -32,26 +33,15 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Check if the user is a Student
+        // --- Role-based Redirects ---
         if ($user->role == 'student') {
-            
-            // Fetch active jobs
             $jobs = Job::where('university_id', $user->university_id)
-                       ->where('status', 'active')
-                       ->latest()
-                       ->get();
-                       
-            // Fetch available mentors from the same university
+                       ->where('status', 'active')->latest()->get();
             $mentors = User::where('university_id', $user->university_id)
                            ->where('role', 'donor')
-                           ->where('is_available_for_mentoring', true)
-                           ->get();
-
-            // Return the student dashboard with both jobs and mentors
+                           ->where('is_available_for_mentoring', true)->get();
             return view('dashboards.student', compact('jobs', 'mentors'));
         }
-
-        // 2. Check for Admins and redirect them
         if ($user->role == 'superadmin') {
             return redirect()->route('superadmin.dashboard');
         }
@@ -59,9 +49,36 @@ class HomeController extends Controller
             return redirect()->route('uadmin.dashboard');
         }
 
-        // 3. Fallback for 'donor' (Alumni)
-        // This view will contain their dashboard, including the "Manage My Job Postings" button.
-        return view('home');
+        // --- 3. New Donor Dashboard Logic ---
+        // This logic now runs only for the 'donor' role
+
+        // A. Get all active projects from the user's university
+        $universityProjects = Project::where('university_id', $user->university_id)
+                                     ->where('status', 'active')
+                                     ->latest()
+                                     ->get();
+
+        // B. Get a list of project IDs this user has successfully donated to
+        $donatedProjectIds = Donation::where('user_id', $user->id)
+                                     ->where('status', 'successful')
+                                     ->pluck('project_id')
+                                     ->unique()
+                                     ->toArray();
+
+        // C. Get "at-a-glance" impact stats
+        $totalDonations = Donation::where('user_id', $user->id)
+                                  ->where('status', 'successful')
+                                  ->sum('amount');
+        
+        $projectsSupported = count($donatedProjectIds);
+
+        // D. Pass all data to the 'home' view
+        return view('home', compact(
+            'universityProjects', 
+            'donatedProjectIds', 
+            'totalDonations', 
+            'projectsSupported'
+        ));
     }
 
     /**
