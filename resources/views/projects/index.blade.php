@@ -10,7 +10,6 @@
       We pass the auth status and the app's base URL as props.
     --}}
     <project-browser 
-        :is-logged-in="{{ auth()->check() ? 'true' : 'false' }}"
         :app-url="'{{ rtrim(config('app.url'), '/') }}'"
     ></project-browser>
 </div>

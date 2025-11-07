@@ -3,7 +3,7 @@
         <div class="row">
             <div class="input-field col s12 m6">
                 <i class="material-icons prefix">search</i>
-                <input type="text" id="search" v-model="searchTerm" @input="updateFilters">
+                <input type="text" id="search" v-model="searchTerm">
                 <label for="search">Search by project title or university...</label>
             </div>
         </div>
@@ -34,40 +34,14 @@
                         <p>₦{{ formatCurrency(project.current_amount) }} raised of ₦{{ formatCurrency(project.goal_amount) }}</p>
                     </div>
                     <div class="card-action">
-                         <a v-if="!isLoggedIn" :href="`${appUrl}/projects/${project.slug}`" class="indigo-text">View Project Details</a>
-                        <a v-else :href="`#donateModal-${project.id}`" class="btn-flat indigo-text modal-trigger">
-                            Donate Now
-                        </a>
+                         <a :href="`${appUrl}/projects/${project.slug}`" class="indigo-text">View Project Details</a>
                     </div>
                     <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">{{ project.title }}<i class="material-icons right">close</i></span>
                         <div v-html="project.description"></div>
                     </div>
                 </div>
-
-                <div :id="`donateModal-${project.id}`" class="modal">
-                    <form :action="donateUrl" method="POST">
-                        <input type="hidden" name="_token" :value="csrfToken">
-                        <input type="hidden" name="project_id" :value="project.id">
-
-                        <div class="modal-content">
-                            <h4>Donate to {{ project.title }}</h4>
-                            <div class="input-field">
-                                <input type="number" name="amount" :id="`amount-${project.id}`" :min="minDonation" required>
-                                <label :for="`amount-${project.id}`">Amount (NGN)</label>
-                                <span class="helper-text">Minimum donation is ₦{{ minDonation }} (approx. $1 USD)</span>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#!" class="modal-close waves-effect waves-grey btn-flat">Cancel</a>
-                            <button type="submit" class="btn waves-effect waves-light indigo">
-                                Proceed to Payment
-                            </button>
-                        </div>
-                    </form>
                 </div>
-
-            </div>
             
             <div v-if="!loading && filteredProjects.length === 0" class="col s12">
                  <div class="card-panel">
@@ -83,11 +57,8 @@ import axios from 'axios';
 
 export default {
     props: {
-        isLoggedIn: {
-            type: Boolean,
-            default: false
-        },
-        appUrl: { // <-- App URL prop
+        // We only need the appUrl prop now
+        appUrl: { 
             type: String,
             required: true
         }
@@ -98,32 +69,34 @@ export default {
             filteredProjects: [],
             searchTerm: '',
             loading: true,
-            defaultImageUrl: 'https://via.placeholder.com/400x300.png?text=Project+Image',
-            csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            donateUrl: '/donate/start', // This is relative to the appUrl
-            minDonation: 1450
+            defaultImageUrl: 'https://placehold.co/600x400/black/white?text=No Cover Image',
+            // All donation-related data has been REMOVED
         };
+    },
+    computed: {
+        // This automatically filters the list when searchTerm changes
+        filteredProjects() {
+            if (!this.searchTerm) {
+                return this.projects;
+            }
+            const term = this.searchTerm.toLowerCase();
+            return this.projects.filter(project =>
+                project.title.toLowerCase().includes(term) ||
+                project.university.name.toLowerCase().includes(term)
+            );
+        }
     },
     methods: {
         async fetchProjects() {
             this.loading = true;
             try {
-                // Use the appUrl to make the API call
                 const response = await axios.get(`${this.appUrl}/api/projects`);
                 this.projects = response.data;
-                this.filteredProjects = this.projects;
             } catch (error) {
                 console.error("There was an error fetching the projects:", error);
             } finally {
                 this.loading = false;
             }
-        },
-        updateFilters() {
-            const term = this.searchTerm.toLowerCase();
-            this.filteredProjects = this.projects.filter(project =>
-                project.title.toLowerCase().includes(term) ||
-                project.university.name.toLowerCase().includes(term)
-            );
         },
         getProgress(project) {
             if (project.goal_amount > 0) {
@@ -140,33 +113,13 @@ export default {
             if (!path) {
                 return this.defaultImageUrl;
             }
-            
-            let imagePath = '';
-            // Handle incorrect paths that already contain 'storage/'
-            if (path.startsWith('/storage/')) {
-                imagePath = path;
-            } else {
-                imagePath = `storage/${path}`;
-            }
-            // Prepend the appUrl prop to create the full, absolute URL
+            let imagePath = path.startsWith('storage/') ? path : `storage/${path}`;
             return `${this.appUrl}/${imagePath}`;
         },
         setDefaultImage(event) {
             event.target.src = this.defaultImageUrl;
         },
-        initializeModals() {
-            this.$nextTick(() => {
-                setTimeout(() => {
-                    var elems = document.querySelectorAll('.modal');
-                    M.Modal.init(elems);
-                }, 500);
-            });
-        }
-    },
-    watch: {
-        filteredProjects() {
-            this.initializeModals();
-        }
+        // The initializeModals method and the 'watch' block have been REMOVED
     },
     mounted() {
         this.fetchProjects();

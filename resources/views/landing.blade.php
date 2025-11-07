@@ -135,7 +135,7 @@
 @php
     function getImageUrl($path) {
         if (!$path) {
-            return 'https://via.placeholder.com/400x300.png?text=Project+Image';
+            return 'https://placehold.co/600x400/black/white?text=No Cover Image';
         }
         if (Str::startsWith($path, '/storage/')) {
             return asset($path);
