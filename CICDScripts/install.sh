@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #install all node packages
-# cd /var/www/naijaedupact
+cd /var/www/naijaedupact
 
 #install all composer packages
 # echo "Updating composer packages"
