@@ -14,6 +14,17 @@
             <div class="col s12 m6">
                 <div class="card">
                     <div class="card-content">
+                        <span class="card-title"><i class="material-icons left">account_balance</i> Manage General Fund</span>
+                        <p>Edit your university's story and post timeline updates for general donations.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="{{ route('uadmin.general-fund.edit') }}" class="indigo-text">Manage Fund</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="card-content">
                         <span class="card-title"><i class="material-icons left">assignment</i> Manage Projects</span>
                         <p>Create new projects, post updates, and manage existing fundraising goals.</p>
                     </div>

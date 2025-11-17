@@ -37,8 +37,8 @@ class ProjectSeeder extends Seeder
 
             $this->command->info("Seeding 3 projects for {$uni->name}...");
 
-            // Seed 3 projects for this university
-            for ($i = 1; $i <= 3; $i++) {
+            // Seed 2 projects for this university
+            for ($i = 1; $i <= 2; $i++) {
                 $title = "Project {$i} for {$uni->name}";
                 Project::firstOrCreate(
                     ['title' => $title],

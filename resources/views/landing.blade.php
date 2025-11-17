@@ -80,6 +80,11 @@
                             <span class="card-title project-card-title">{{ Str::limit($project->title, 40) }}</span>
                         </div>
                         <div class="card-content">
+                            <p class="grey-text" style="font-weight: 500; margin-bottom: 5px;">
+                                <a href="{{ route('universities.show', $project->university->slug) }}" class="indigo-text">
+                                    {{ $project->university->name }}
+                                </a>
+                            </p>
                             <p>
                                 {{ Str::limit(strip_tags($project->description), 80) }}
                             </p>

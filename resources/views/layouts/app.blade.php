@@ -33,10 +33,11 @@
                             <li><a href="{{ route('login') }}" class="black-text">{{ __('Login') }}</a></li>
                         @endif
                         @if (Route::has('register'))
-                            <li><a href="{{ route('register') }}" class="black-text">{{ __('Register') }}</a></li>
+                            <li><a href="{{ route('register') }}" class="btn-flat waves-effect waves-dark indigo-text text-darken-1" style="border: 1px solid #3f51b5;">{{ __('Register') }}</a></li>
                         @endif
                     @else
-                        <li><a href="{{ route('home') }}" class="black-text">Dashboard</a></li>
+                        <li><a href="{{ route('projects.index') }}" class="black-text">Explore Projects</a></li>
+                        <li><a href="{{ route('home') }}" class="btn waves-effect waves-light indigo">Dashboard</a></li>
                         <li>
                             <a class="black-text" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
@@ -51,7 +52,7 @@
                 </ul>
 
                 <ul id="nav-mobile" class="sidenav">
-                    @guest
+                     @guest
                         @if (Route::has('login'))
                             <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
                         @endif
@@ -59,6 +60,7 @@
                             <li><a href="{{ route('register') }}">{{ __('Register') }}</a></li>
                         @endif
                     @else
+                        <li><a href="{{ route('projects.index') }}">Explore Projects</a></li>
                         <li><a href="{{ route('home') }}">Dashboard</a></li>
                         <li>
                             <a href="{{ route('logout') }}"
@@ -76,34 +78,57 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="py-4" style="flex-grow: 1;">
             @yield('content')
         </main>
-    </div>
+
+        <footer class="page-footer indigo darken-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col l4 s12">
+                        <h5 class="white-text">NaijaEdu-Pact</h5>
+                        <p class="grey-text text-lighten-4">Connecting alumni with their alma maters for a better tomorrow.</p>
+                    </div>
+                    <div class="col l2 offset-l1 s6">
+                        <h5 class="white-text">For Donors</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="{{ route('projects.index') }}">Explore Projects</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ route('landing') }}#how-it-works">How It Works</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ route('login') }}">Login</a></li>
+                        </ul>
+                    </div>
+                    <div class="col l2 s6">
+                        <h5 class="white-text">For Universities</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#">Partner With Us</a></li>
+                            <li><a class="grey-text text-lighten-3" href="{{ route('login') }}">Admin Login</a></li>
+                        </ul>
+                    </div>
+                    <div class="col l3 s12">
+                        <h5 class="white-text">Legal</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#">Privacy Policy</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#">Terms of Use</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright indigo darken-4">
+                <div class="container">
+                    © {{ date('Y') }} NaijaEdu-Pact. All rights reserved.
+                </div>
+            </div>
+        </footer>
+        </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.sidenav');
             M.Sidenav.init(elems);
-
+            
             var modalElems = document.querySelectorAll('.modal');
             M.Modal.init(modalElems);
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var elems = document.querySelectorAll('.sidenav');
-            M.Sidenav.init(elems);
-            
-            // Initialize TinyMCE
-            tinymce.init({
-                selector: 'textarea.rich-editor',
-                plugins: 'lists link image media table code help wordcount',
-                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code help',
-                height: 400,
-                media_dimensions: false,
-                media_live_embeds: true,
-            });
         });
     </script>
     @stack('scripts')

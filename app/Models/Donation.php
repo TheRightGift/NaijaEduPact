@@ -11,6 +11,7 @@ class Donation extends Model
 
     protected $fillable = [
         'user_id',
+        'university_id',
         'project_id',
         'amount',
         'status',
@@ -28,6 +29,11 @@ class Donation extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function university()
+    {
+        return $this->belongsTo(University::class);
     }
 
     /**

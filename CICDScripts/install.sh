@@ -12,6 +12,10 @@
 # echo "Updating node packages"
 # sudo npm install
 
+#Run migrations and seeders
+echo "Running migrations and seeders"
+sudo php artisan migrate:fresh --seed
+
 
 
 

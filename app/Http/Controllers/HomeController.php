@@ -89,11 +89,11 @@ class HomeController extends Controller
             abort(403);
         }
 
-        $donations = Donation::where('user_id', $user->id)
+        $donationsQuery = Donation::where('user_id', $user->id)
                              ->where('status', 'successful')
-                             ->with('project')
-                             ->latest()
-                             ->paginate(20);
+                             ->latest();
+
+        $donations = $donationsQuery->with('project', 'university')->paginate(20);
 
         return view('donations.history', compact('donations'));
     }

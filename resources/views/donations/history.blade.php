@@ -9,7 +9,7 @@
         <table class="striped">
             <thead>
                 <tr>
-                    <th>Project</th>
+                    <th>Donation Target</th>
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Reference ID</th>
@@ -19,8 +19,17 @@
                 @forelse($donations as $donation)
                     <tr>
                         <td>
-                            {{-- Check if project still exists --}}
-                            {{ $donation->project->title ?? 'Project Removed' }}
+                            @if ($donation->project)
+                                {{-- It's a project donation --}}
+                                <a href="{{ route('projects.show', $donation->project) }}" class="indigo-text">
+                                    {{ $donation->project->title }}
+                                </a>
+                            @else
+                                {{-- It's a general fund donation --}}
+                                <a href="{{ route('universities.show', $donation->university) }}" class="indigo-text">
+                                    {{ $donation->university->name }} General Fund
+                                </a>
+                            @endif
                         </td>
                         <td>₦{{ number_format($donation->amount) }}</td>
                         <td>{{ $donation->created_at->format('M d, Y') }}</td>
@@ -30,7 +39,8 @@
                     <tr>
                         <td colspan="4" class="center-align">You have not made any successful donations yet.</td>
                     </tr>
-                @endforelse
+                {{-- THIS IS THE FIX (all lowercase) --}}
+                @endforelse 
             </tbody>
         </table>
     </div>

@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col s12 l9">
+        <div class="col s12 l8">
 
             @if(session('success'))
                 <div class="card-panel green lighten-4 green-text text-darken-4">{{ session('success') }}</div>
@@ -13,17 +13,31 @@
                 <div class="card-panel red lighten-4 red-text text-darken-4">{{ session('error') }}</div>
             @endif
 
-            <h4>Projects from {{ Auth::user()->university->name ?? 'your Alma Mater' }}</h4>
+            <div class="card-panel">
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="col s8">
+                        <h5>{{ Auth::user()->university->name ?? 'Your University' }} General Fund</h5>
+                        <p>Donations to this fund support the university's most pressing needs.</p>
+                    </div>
+                    <div class="col s4 center-align" style="padding-top: 10px;">
+                        <a href="{{ route('universities.show', Auth::user()->university->slug) }}" class="btn-large indigo waves-effect">
+                            Donate
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <h4>Active Projects</h4>
             
             <div class="row">
                 @forelse($universityProjects as $project)
-                    <div class="col s12 m6 l4">
+                    <div class="col s12 m6">
                         <div class="card sticky-action">
                             <div class="card-image">
                                 <img src="{{ getImageUrl($project->cover_image_path) }}" onerror="this.src='https://placehold.co/600x400/black/white?text=No Cover Image'">
                             </div>
                             <div class="card-content">
-                                <span class="card-title activator grey-text text-darken-4" style="font-size: 1.2rem; line-height: 1.4;">
+                                <span class="card-title activator grey-text text-darken-4">
                                     {{ $project->title }}
                                 </span>
                                 <div class="progress" style="margin-top: 15px;">
@@ -36,7 +50,7 @@
                                     ₦{{ number_format($project->current_amount) }} raised of ₦{{ number_format($project->goal_amount) }}
                                 </p>
                             </div>
-                           <div class="card-action">
+                            <div class="card-action">
                                 <a href="{{ route('projects.show', $project) }}" class="indigo-text">View Project</a>
                                 
                                 @if (isset($userDonationsPerProject[$project->id]))
@@ -73,7 +87,7 @@
 
         </div>
 
-        <div class="col s12 l3">
+        <div class="col s12 l4">
             
             <div class="card-panel center-align">
                 <h5 class="grey-text text-darken-2">My Impact</h5>
@@ -105,12 +119,13 @@
 </div>
 @endsection
 
+{{-- Helper function to get image URL --}}
 @php
     function getImageUrl($path) {
         if (!$path) {
             return 'https://placehold.co/600x400/black/white?text=No Cover Image';
         }
-        if (Str::startsWith($path, '/storage/')) {
+        if (Str::startsWith($path, 'storage/')) {
             return asset($path);
         }
         return Storage::url($path);
