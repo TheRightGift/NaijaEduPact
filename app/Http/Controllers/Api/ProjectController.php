@@ -15,7 +15,7 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::where('status', 'active')
-                           ->with('university:id,name') // Eager load university name for efficiency
+                           ->with('university:id,name,slug') // Eager load university with selected fields
                            ->latest()
                            ->get();
 

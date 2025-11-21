@@ -121,6 +121,7 @@
         </footer>
         </div>
 
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -129,6 +130,19 @@
             
             var modalElems = document.querySelectorAll('.modal');
             M.Modal.init(modalElems);
+
+            // Initialize TinyMCE
+            if (typeof tinymce !== 'undefined') {
+                console.log('TinyMCE found, initializing...'); // Debug 2
+                tinymce.init({
+                    selector: '.rich-editor', // Make sure this matches your textarea class
+                    plugins: 'lists link image media table code help wordcount',
+                    toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code help',
+                    height: 400
+                });
+            } else {
+                console.error('TinyMCE script NOT loaded'); // Debug 3
+            }
         });
     </script>
     @stack('scripts')

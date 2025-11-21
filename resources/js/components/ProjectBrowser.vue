@@ -26,7 +26,11 @@
                     </div>
                     <div class="card-content">
                         <span class="card-title activator grey-text text-darken-4">{{ project.title }}<i class="material-icons right">more_vert</i></span>
-                        <p><strong>{{ project.university.name }}</strong></p>
+                        <p>
+                            <a :href="`${appUrl}/universities/${project.university.slug}`" class="indigo-text">
+                                <strong>{{ project.university.name }}</strong>
+                            </a>
+                        </p>
                         <br>
                         <div class="progress">
                             <div class="determinate" :style="{ width: getProgress(project) + '%' }"></div>
